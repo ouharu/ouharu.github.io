@@ -1,12 +1,25 @@
-# 个人博客系统的搭建
+---
+title: "Hexo Setup"
+date: 2024-06-25
+tags: hexo, 博客
+---
 
-[TOC]
-
-
+- [0.依赖安装](#0依赖安装)
+- [1.Hexo本地安装](#1hexo本地安装)
+  - [\_config.yml 配置](#_configyml-配置)
+- [2.localhost测试](#2localhost测试)
+- [3.github actions自动化发布到github pages](#3github-actions自动化发布到github-pages)
+  - [1. 创建username.github.io 仓库(username：ouharu)](#1-创建usernamegithubio-仓库usernameouharu)
+  - [2. hexo-blog 文件夹 push 到 username.github.io 仓库](#2-hexo-blog-文件夹-push-到-usernamegithubio-仓库)
+  - [3. 切换node版本到20（github action兼容性考虑）](#3-切换node版本到20github-action兼容性考虑)
+  - [4. github repo 设置，创建github actions 代码](#4-github-repo-设置创建github-actions-代码)
+- [4.解决搭建过程中的问题](#4解决搭建过程中的问题)
+  - [1. hexo new 出错](#1-hexo-new-出错)
+  - [2.页内链接跳转失败](#2页内链接跳转失败)
 
 ## 当初
 
-兜兜转转最终还是决定用hexo搭建，20年的时候曾经跟着视频教程搭建过，感觉每次在命令行里敲命令进行博客创作**发布维护太不优雅**了，加上自己本来**没有什么想要分享展示**的想法，个人博客项目就此中止。
+个人博客系统的搭建:兜兜转转最终还是决定用hexo搭建，20年的时候曾经跟着视频教程搭建过，感觉每次在命令行里敲命令进行博客创作**发布维护太不优雅**了，加上自己本来**没有什么想要分享展示**的想法，个人博客项目就此中止。
 期间也有试过csdn、博客园等国内社区型博客网站，qiita、zenn、hatena等日本技术博客分享网站，终因为写作体验不好加上没能坚持（懒，加上没有持续学习持续产出分享）而作罢。hugo、gridea等一些与hexo类似的工具也体验过，当时就是跟着视频花了x分钟做出来后，并没有体会到与hexo相比明显的优势，再加上对之前所写内容没有维护和备份，导致自己在写作这件事上一直是无数次从0开始而感到厌倦，跟着换主题搞的**花里胡哨**也不是我的目的，博客生涯告一段落。
 
 ## 现在
@@ -17,16 +30,7 @@
 
 这么多年过去了，它依旧是最简洁方便的，看了下doc大体上描述比较清晰（好吧，比起hugo、vuepress比较简单易懂，没有那么混乱，后面需要升级迁移再看看其它的方案吧），加上最近b站有up主在更新搭建指南和解决bug的[视频](https://www.bilibili.com/video/BV1xTgTemEDU/?share_source=copy_web&vd_source=f337ed634aad4136ce7b9c860e5d53bc)，自己可以跟着尝试一下(人家行，咱也行)。大体的搭建路线：
 
-0. [依赖安装](#0. 依赖安装)
-1. [Hexo本地安装](#1.Hexo本地安装)
-2. [localhost测试](#2. localhost测试)
-3. [github actions自动化发布到github pages](#3. github actions自动化发布到github pages)
-4. [解决typora写作时图片显示问题](#4. 解决typora写作时图片显示问题)
-5. 
-
-
-
-# 0. 依赖安装
+# 0.依赖安装
 
 > ref: https://hexo.io/docs/
 
@@ -200,25 +204,25 @@ deploy:
 
 ```
 
-# 2. localhost测试
+# 2.localhost测试
 
 > ref: https://hexo.io/docs/server
 
 ```powershell
-PS C:\Users\cwang84\OneDrive - DXC Production\Desktop\Typora\hexo-blog> hexo server
+PS C:\Users\cwang84\Desktop\Typora\hexo-blog> hexo server
 INFO  Validating config
 INFO  Start processing
 INFO  Hexo is running at http://localhost:4000/ . Press Ctrl+C to stop.
-INFO  See you again		
+INFO  See you again
 ```
 
 ![](hexo_setup/image-20240625010917680.png)
 
-# 3. github actions自动化发布到github pages
+# 3.github actions自动化发布到github pages
 
 今后hexo文件夹更新commit后，blog即可在github actions的作用下自动更新
 
-## 1. 创建***username\*.github.io** 仓库(username：ouharu)
+## 1. 创建username.github.io 仓库(username：ouharu)
 
 ![](hexo_setup/image-20240625021445696.png)
 
@@ -314,7 +318,7 @@ jobs:
 
 保存后`https://github.com/ouharu/ouharu.github.io/actions`check 执行结果，访问`https://ouharu.github.io/`
 
-## *出现css样式无法加载的问题
+*出现css样式无法加载的问题
 
 解决方法：_config.yml更新url:
 
@@ -322,5 +326,31 @@ jobs:
 url: https://ouharu.github.io/
 ```
 
-# 4. 解决typora写作时图片显示问题
+# 4.解决搭建过程中的问题
 
+## 1. hexo new 出错
+
+出错信息：
+
+```yaml
+ERROR Process failed: hexo_setup.md
+YAMLException: end of the stream or a document separator is expected (9:1)
+```
+
+原因：.md文件上方没有front matter
+解决：文件开头添加如下代码
+
+```yaml
+---
+title: "Hexo Setup"
+date: 2024-06-25
+tags: hexo, setup
+---
+```
+
+再次执行OK
+
+## 2.页内链接跳转失败
+
+出错信息：hexo server里，点击链接无法跳转到标题的正确位置，使用语法`[](#xxx)`
+原因：

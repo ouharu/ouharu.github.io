@@ -16,6 +16,7 @@ tags: hexo, 博客
 - [4. issues](#4-issues)
   - [4-1 hexo new 出错](#4-1-hexo-new-出错)
   - [4-2 页内toc链接跳转失败](#4-2-页内toc链接跳转失败)
+  - [4-3 hello world.md github部署后日期问题](#4-3-hello-worldmd-github部署后日期问题)
 
 ## 当初
 
@@ -359,3 +360,10 @@ tags: hexo, setup
 解决：放弃使用vscode markdown插件生成的toc，考虑使用fluid主题自带的toc
 结果：20240626 待办
 
+## 4-3 hello world.md github部署后日期问题
+
+出错信息：hexo s时创建日期为0624，部署到github为当天日期。
+
+原因：front matter里面没有声明date
+
+解决：hello world.md中添加date0624，github部署测试结果

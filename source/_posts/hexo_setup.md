@@ -4,18 +4,18 @@ date: 2024-06-25
 tags: hexo, 博客
 ---
 
-- [0.依赖安装](#0依赖安装)
-- [1.Hexo本地安装](#1hexo本地安装)
+- [0. requirements](#0-requirements)
+- [1. hexo install](#1-hexo-install)
   - [\_config.yml 配置](#_configyml-配置)
-- [2.localhost测试](#2localhost测试)
-- [3.github actions自动化发布到github pages](#3github-actions自动化发布到github-pages)
-  - [1. 创建username.github.io 仓库(username：ouharu)](#1-创建usernamegithubio-仓库usernameouharu)
-  - [2. hexo-blog 文件夹 push 到 username.github.io 仓库](#2-hexo-blog-文件夹-push-到-usernamegithubio-仓库)
-  - [3. 切换node版本到20（github action兼容性考虑）](#3-切换node版本到20github-action兼容性考虑)
-  - [4. github repo 设置，创建github actions 代码](#4-github-repo-设置创建github-actions-代码)
-- [4.解决搭建过程中的问题](#4解决搭建过程中的问题)
-  - [1. hexo new 出错](#1-hexo-new-出错)
-  - [2.页内链接跳转失败](#2页内链接跳转失败)
+- [2. localhost test](#2-localhost-test)
+- [3. github actions deployment](#3-github-actions-deployment)
+  - [3-1 创建username.github.io 仓库(username：ouharu)](#3-1-创建usernamegithubio-仓库usernameouharu)
+  - [3-2 hexo-blog 文件夹 push 到 username.github.io](#3-2-hexo-blog-文件夹-push-到-usernamegithubio)
+  - [3-3 切换node版本到20（github action兼容性考虑）](#3-3-切换node版本到20github-action兼容性考虑)
+  - [3-4 github repo setting](#3-4-github-repo-setting)
+- [4. issues](#4-issues)
+  - [4-1 hexo new 出错](#4-1-hexo-new-出错)
+  - [4-2 页内toc链接跳转失败](#4-2-页内toc链接跳转失败)
 
 ## 当初
 
@@ -30,7 +30,7 @@ tags: hexo, 博客
 
 这么多年过去了，它依旧是最简洁方便的，看了下doc大体上描述比较清晰（好吧，比起hugo、vuepress比较简单易懂，没有那么混乱，后面需要升级迁移再看看其它的方案吧），加上最近b站有up主在更新搭建指南和解决bug的[视频](https://www.bilibili.com/video/BV1xTgTemEDU/?share_source=copy_web&vd_source=f337ed634aad4136ce7b9c860e5d53bc)，自己可以跟着尝试一下(人家行，咱也行)。大体的搭建路线：
 
-# 0.依赖安装
+# 0. requirements
 
 > ref: https://hexo.io/docs/
 
@@ -62,7 +62,7 @@ C:\Users\cwang84>git --version
 git version 2.45.2.windows.1
 ```
 
-# 1.Hexo本地安装
+# 1. hexo install
 
 > ref: https://hexo.io/docs/#Install-Hexo , https://hexo.io/docs/setup , https://hexo.io/docs/configuration
 
@@ -204,7 +204,7 @@ deploy:
 
 ```
 
-# 2.localhost测试
+# 2. localhost test
 
 > ref: https://hexo.io/docs/server
 
@@ -218,15 +218,15 @@ INFO  See you again
 
 ![](hexo_setup/image-20240625010917680.png)
 
-# 3.github actions自动化发布到github pages
+# 3. github actions deployment
 
 今后hexo文件夹更新commit后，blog即可在github actions的作用下自动更新
 
-## 1. 创建username.github.io 仓库(username：ouharu)
+## 3-1 创建username.github.io 仓库(username：ouharu)
 
 ![](hexo_setup/image-20240625021445696.png)
 
-## 2. hexo-blog 文件夹 push 到 username.github.io 仓库
+## 3-2 hexo-blog 文件夹 push 到 username.github.io
 
 ```powershell
 /hexo-blog (main)
@@ -246,7 +246,7 @@ branch 'main' set up to track 'origin/main'.
 
 ```
 
-## 3. 切换node版本到20（github action兼容性考虑）
+## 3-3 切换node版本到20（github action兼容性考虑）
 
 ```powershell
 PS C:\Users\cwang84> nvs
@@ -255,7 +255,7 @@ PS C:\Users\cwang84> node -v
 v20.15.0
 ```
 
-## 4. github repo 设置，创建github actions 代码
+## 3-4 github repo setting
 
 In your GitHub repo’s setting, navigate to **Settings** > **Pages** > **Source**. Change the source to **GitHub Actions** and save.
 
@@ -326,9 +326,9 @@ jobs:
 url: https://ouharu.github.io/
 ```
 
-# 4.解决搭建过程中的问题
+# 4. issues
 
-## 1. hexo new 出错
+## 4-1 hexo new 出错
 
 出错信息：
 
@@ -350,7 +350,12 @@ tags: hexo, setup
 
 再次执行OK
 
-## 2.页内链接跳转失败
+## 4-2 页内toc链接跳转失败
 
-出错信息：hexo server里，点击链接无法跳转到标题的正确位置，使用语法`[](#xxx)`
-原因：
+出错信息：hexo generate -> hexo server，点击toc链接无法跳转到标题的正确位置
+
+原因：由于 Hexo 在生成 HTML 时，对 Markdown 标题生成的 id 属性和你期望的锚点链接不一致。生成toc采用vscode markdown all in one插件，基于 [github/gitlab flavored markdown](https://stackoverflow.com/questions/43273842/what-are-the-rules-of-converting-one-markdown-title-into-an-html-anchor) 规则,转换为html时toc与标题的href链接不一致
+
+解决：放弃使用vscode markdown插件生成的toc，考虑使用fluid主题自带的toc
+结果：20240626 待办
+

@@ -17,6 +17,7 @@ tags: hexo, 博客
   - [4-1 hexo new 出错](#4-1-hexo-new-出错)
   - [4-2 页内toc链接跳转失败](#4-2-页内toc链接跳转失败)
   - [4-3 hello world.md github部署后日期问题](#4-3-hello-worldmd-github部署后日期问题)
+  - [4-4 图片无法显示](#4-4-图片无法显示)
 
 ## 当初
 
@@ -218,6 +219,8 @@ INFO  See you again
 ```
 
 ![](hexo_setup/image-20240625010917680.png)
+![](2024-06-25-hexo_setup/image-20240625010917680.png)
+
 
 # 3. github actions deployment
 
@@ -366,4 +369,29 @@ tags: hexo, setup
 
 原因：front matter里面没有声明date
 
-解决：hello world.md中添加date0624，github部署测试结果
+解决：hello world.md中front matter位置添加date0624，github部署测试
+
+结果：问题解决
+
+## 4-4 图片无法显示
+
+出错信息：部署后页面无法显示图片
+
+原因：hexo中引用图像的正确方法是使用标签插件语法而不是 markdown
+
+```markdown
+{% asset_img example.jpg This is an example image %}
+{% asset_img "spaced asset.jpg" "spaced title" %}
+```
+使用markdown语法时，hexo读取路径为yyyy/mm/dd/title/xxx.png，typora设定为title/xxx.png
+
+解决：[参考](https://github.com/cocowool/hexo-image-link)
+- 🚫~~安装插件`npm install https://github.com/CodeFalling/hexo-asset-image --save`~~ 
+    - 卸载`npm uninstall hexo-asset-image`
+    - 检查项目依赖`npm list --depth=0`
+- ✅安装插件`npm install hexo-image-link --save`
+- _config.yml里设置trailing_html: false
+- hexo clean && hexo generate
+- 命令行出现 `update link as:-->yyyy/mm/dd/title/xxx.png`
+
+结果：20240626 待办

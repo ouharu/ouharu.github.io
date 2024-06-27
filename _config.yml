@@ -8,7 +8,7 @@ subtitle: "Technical Solutions and Life Thoughts Blog built on Hexo"
 description: "Welcome to Oharu's blog. Here, I document solutions to daily technical issues and share my thoughts on life. This space is dedicated to sharing knowledge about technology and insights into my life."
 keywords: IT Jobs,Life in Japan,Developer,Tech Blog,Life Thoughts
 author: Oharu
-language: zh
+language: zh-CN  # 指定语言，会影响主题显示的语言，按需修改
 timezone: 'Japan'
 
 # URL
@@ -100,7 +100,7 @@ ignore:
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: landscape
+theme: fluid  # 指定主题
 
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment

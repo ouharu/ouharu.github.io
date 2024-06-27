@@ -1,24 +1,8 @@
 ---
 title: "Hexo初步搭建"
 date: 2024-06-25
-tags: hexo, 博客
+tags: [hexo,tutorial]
 ---
-
-- [0. 本地安装node,git](#0-本地安装nodegit)
-- [1. 安装hexo](#1-安装hexo)
-  - [\_config.yml 配置](#_configyml-配置)
-- [2. 本地部署测试](#2-本地部署测试)
-- [3. github actions部署](#3-github-actions部署)
-  - [3-1 创建username.github.io 仓库(username：ouharu)](#3-1-创建usernamegithubio-仓库usernameouharu)
-  - [3-2 hexo-blog 文件夹 push 到 username.github.io](#3-2-hexo-blog-文件夹-push-到-usernamegithubio)
-  - [🚫~~3-3 切换node版本到20（github action兼容性考虑）~~](#3-3-切换node版本到20github-action兼容性考虑)
-  - [3-4 github repo setting](#3-4-github-repo-setting)
-- [4. issues](#4-issues)
-  - [4-0 hexo commands](#4-0-hexo-commands)
-  - [4-1 hexo new 出错](#4-1-hexo-new-出错)
-  - [4-2 页内toc链接跳转失败](#4-2-页内toc链接跳转失败)
-  - [4-3 hello world.md github部署后日期问题](#4-3-hello-worldmd-github部署后日期问题)
-  - [4-4 图片无法显示](#4-4-图片无法显示)
 
 ## 当初
 
@@ -223,7 +207,7 @@ INFO  See you again
 ```
 
 ![](hexo_setup/image-20240625010917680.png)
-![](2024-06-25-hexo_setup/image-20240625010917680.png)
+
 
 # 3. github actions部署
 
@@ -341,6 +325,8 @@ url: https://ouharu.github.io/
 
 ## 4-0 hexo commands
 
+https://hexo.io/zh-cn/docs/commands
+
 ## 4-1 hexo new 出错
 
 - 出错信息：
@@ -370,7 +356,8 @@ tags: hexo, setup
 原因：由于 Hexo 在生成 HTML 时，对 Markdown 标题生成的 id 属性和你期望的锚点链接不一致。生成toc采用vscode markdown all in one插件，基于 [github/gitlab flavored markdown](https://stackoverflow.com/questions/43273842/what-are-the-rules-of-converting-one-markdown-title-into-an-html-anchor) 规则,转换为html时toc与标题的href链接不一致
 
 解决：放弃使用vscode markdown插件生成的toc，考虑使用fluid主题自带的toc
-结果：参看hexo美化博文
+结果：参看hexo美化博文, 成功解决
+![image-20240626232537892](hexo_setup/image-20240626232537892.png)
 
 ## 4-3 hello world.md github部署后日期问题
 
@@ -410,3 +397,14 @@ asset_img string: {% asset_img image-20240626172554825.png image-202406261725548
 ```
 
 - 结果：图片显示成功，感谢插件[作者](http://edulinks.cn/2020/03/14/20200314-write-hexo-with-typora/)
+
+# 5. 效果展示
+
+![image-20240626214526200](hexo_setup/image-20240626214526200.png)
+
+页面可以说是很难看了。。。
+下期可以做一下美化，使用的是[Hexo Fluid](https://hexo.fluid-dev.com/docs/)主题，团队的文档写的很棒，功能齐全，内容也一直在更新维护，是个可以长期利用下去的主题。
+
+---
+
+完

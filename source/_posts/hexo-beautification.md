@@ -1,6 +1,8 @@
 ---
 title: "Hexo美化"
 date: 2024-06-26 22:15:20
+categories:
+  - Diary
 tags: 
  - hexo
  - tutorial

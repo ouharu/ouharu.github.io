@@ -222,3 +222,117 @@ date: 2019-10-10 10:00:00
 
 和 Banner 配置相同，`/img/example.jpg` 对应的是存放在 `/source/img/example.jpg` 目录下的图片（目录也可自定义，但必须在 source 目录下）。
 
+# 13. 开启评论
+
+选用[Giscus](https://giscus.app/zh-CN)，基于 GitHub Discussions，类似于 Utterances仓库
+
+选择 giscus 连接到的仓库。请确保：
+
+1. **该仓库是[公开的](https://docs.github.com/en/github/administering-a-repository/managing-repository-settings/setting-repository-visibility#making-a-repository-public)**，否则访客将无法查看 discussion。
+2. **[giscus](https://github.com/apps/giscus) app 已安装**，否则访客将无法评论和回应。
+3. **Discussions** 功能已[在你的仓库中启用](https://docs.github.com/en/github/administering-a-repository/managing-repository-settings/enabling-or-disabling-github-discussions-for-a-repository)。
+
+仓库：ouharu/ouharu.github.io
+成功！该仓库满足所有条件。
+生成配置js：
+
+```javascript
+<script src="https://giscus.app/client.js"
+        data-repo="ouharu/ouharu.github.io"
+        data-repo-id="R_kgDOMNjsdg"
+        data-category="Show and tell"
+        data-category-id="DIC_kwDOMNjsds4CgbbR"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="1"
+        data-input-position="top"
+        data-theme="dark"
+        data-lang="zh-CN"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+</script>
+```
+
+```yaml
+# Giscus
+# 基于 GitHub Discussions，类似于 Utterances
+# Based on GitHub Discussions, similar to Utterances
+# See: https://giscus.app/
+giscus:
+  repo: ouharu/ouharu.github.io
+  repo-id: R_kgDOMNjsdg
+  category: Show and tell
+  category-id: DIC_kwDOMNjsds4CgbbR
+  theme-light: light
+  theme-dark: dark
+  mapping: pathname
+  reactions-enabled: 1
+  emit-metadata: 1
+  input-position: top
+  lang: zh-CN
+
+```
+
+# 14. 脚注
+
+```yaml
+  # 脚注语法，会在文章底部生成脚注，如果 Markdown 渲染器本身支持，则建议关闭，否则可能会冲突
+  # Support footnote syntax, footnotes will be generated at the bottom of the post page. If the Markdown renderer itself supports it, please disable it, otherwise it may conflict
+  footnote:
+    enable: true
+    # 脚注的节标题，也可以在 front-matter 中通过 `footnote: <h2>Reference</h2>` 这种形式修改单独页面的 header
+    # The section title of the footnote, you can also modify the header of a single page in the form of `footnote: <h2>Reference</h2>` in front-matter
+    header: '<h2>参考</h2>'
+```
+
+```markdown
+正文
+
+## 参考
+[^1]: 参考资料1
+[^2]: 参考资料2	
+```
+
+# 15. 友链
+
+```yaml
+# 友链的成员项
+  # Member item of page
+  items:
+    - {
+      title: "Fluid Blog",
+      intro: "主题博客",
+      link: "https://hexo.fluid-dev.com/",
+      avatar: "/img/favicon.png"
+    }
+    - {
+      title: "Fluid Repo",
+      intro: "主题 GitHub 仓库",
+      link: "https://github.com/fluid-dev/hexo-theme-fluid",
+      avatar: "/img/favicon.png"
+    }
+    - {
+      title: "小豹子的网络记事本",
+      intro: "DBA/Oracle/Zabbix",
+      link: "https://www.cnblogs.com/ddzj01",
+      avatar: "https://www.cnblogs.com/images/cnblogs_com/ddzj01/1525954/t_20180512144908.png"
+    }
+    - {
+      title: "大江小浪",
+      intro: "目前精力集中在运维工具开发",
+      link: "http://edulinks.cn/about/",
+      avatar: "/img/favicon.png"
+    }
+    - {
+      title: "Xiamu",
+      intro: "Hexo基于Github Action实现自动更新Github Pages",
+      link: "https://xiamu-ssr.github.io/Hexo/about/?t=1719501311005",
+      avatar: "/img/favicon.png"
+    }
+```
+
+---
+
+完

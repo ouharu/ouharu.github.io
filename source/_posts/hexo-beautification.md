@@ -396,6 +396,8 @@ layout: false
 
 ## 添加新的站点地图
 
+参考：https://www.bkduck.cn/web/hexo-seo/#google%E6%94%B6%E5%BD%95
+
 安装 sitemap 生成插件
 
 ```shell
@@ -409,3 +411,15 @@ _config.yml 配置文件，添加以下字段：
 sitemap:
   path: sitemap.xml
 ```
+
+hexo g + 部署 github，查看sitemap.xml生成情况
+
+![image-20240629233049909](hexo-beautification/image-20240629233049909.png)
+
+google添加站点地图
+
+![image-20240629233245621](hexo-beautification/image-20240629233245621.png)
+
+## 测试谷歌收录情况
+
+google搜索: `site:https://ouharu.github.io/` 查看结果

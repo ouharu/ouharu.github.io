@@ -335,6 +335,24 @@ giscus:
     }
 ```
 
----
+# 16. 添加51.la 统计
 
-完
+参考：https://202271.xyz/post/28857/
+
+## 注册&登录
+
+https://web.51.la/
+
+## 添加网站（v5版本）
+
+https://web.51.la/user/site/index
+
+## html代码添加到页脚
+
+打开主题设置文件，添加到页脚位置
+
+<script type="text/javascript" src="https://js.users.51.la/21892365.js"></script>	
+
+## 部署确认显示效果
+
+![](hexo-beautification/Screenshot%202024-06-29%20at%2020.30.17.png)

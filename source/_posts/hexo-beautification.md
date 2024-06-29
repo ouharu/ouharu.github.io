@@ -367,7 +367,7 @@ giscus:
 
 # 17. 谷歌收录
 
-参考：<https://202271.xyz/post/26263/>
+参考：<https://202271.xyz/post/26263/> 步骤太简略。。。
 
 ## 打开 google search console，右侧添加博客网址
 
@@ -384,10 +384,28 @@ layout: false
 ---
 ```
 
-
-
 下载html文件，放入source文件夹
 
 ![image-20240629230445809](hexo-beautification/image-20240629230445809.png)
 
 本地测试后部署博客，查看博客域名+html文件名是否可以访问
+
+![image-20240629231523624](hexo-beautification/image-20240629231523624.png)
+
+![image-20240629231636248](hexo-beautification/image-20240629231636248.png)
+
+## 添加新的站点地图
+
+安装 sitemap 生成插件
+
+```shell
+npm install hexo-generator-sitemap --save
+```
+
+_config.yml 配置文件，添加以下字段：
+
+```yaml
+# 自动生成sitemap
+sitemap:
+  path: sitemap.xml
+```

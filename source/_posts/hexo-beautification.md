@@ -208,7 +208,7 @@ index:
 
 `icon` 可以通过[自定义图标](https://hexo.fluid-dev.com/docs/icon/)修改为其他图标
 
-# 【TODO】12.文章在首页的封面图
+# ~~12.文章在首页的封面图~~
 
 对于单篇文章，在文章开头 [front-matter (opens new window)](https://hexo.io/zh-cn/docs/front-matter)中配置 `index_img` 属性。
 
@@ -351,8 +351,34 @@ giscus:
 
 打开主题设置文件，添加到页脚位置
 
+```html
 <script type="text/javascript" src="https://js.users.51.la/21892365.js"></script> 
+```
 
 ## 部署确认显示效果
 
 ![](hexo-beautification/Screenshot 2024-06-29 at 20.30.17.png)
+
+![image-20240629204506175](hexo-beautification/image-20240629204506175.png)
+
+点击 51La，显示下图，说明网站统计添加成功：
+
+![image-20240629204940510](hexo-beautification/image-20240629204940510.png)
+
+# 17. 谷歌收录
+
+参考：https://202271.xyz/post/26263/
+
+## 打开 google search console，右侧添加博客网址
+
+https://search.google.com/search-console/welcome?utm_source=about-page
+
+![image-20240629210844097](hexo-beautification/image-20240629210844097.png)
+
+## 验证网站所有权
+
+下载html文件，放入source文件夹
+
+![image-20240629211332485](hexo-beautification/image-20240629211332485.png)
+
+部署博客后，查看博客域名+html文件名是否可以访问

@@ -7,4 +7,5 @@ tags:
 categories:
 - Diary
 - Work
+category_bar: true
 ---

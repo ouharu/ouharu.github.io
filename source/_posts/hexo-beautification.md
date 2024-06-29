@@ -351,7 +351,6 @@ giscus:
 
 打开主题设置文件，添加到页脚位置
 
-<script type="text/javascript" src="https://js.users.51.la/21892365.js"></script>
 
 ## 部署确认显示效果
 

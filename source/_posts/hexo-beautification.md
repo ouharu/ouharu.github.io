@@ -392,6 +392,8 @@ https://search.google.com/search-console/welcome?utm_source=about-page
 接下来用代码注入的方法验证
 参考：https://hwcoder.top/Hexo-Configuration#%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE
 
-这里选择「HTML 标签验证」，打开node_modules/hexo-theme-fluid/layout/_partial/head.ejs 文件，将验证标签放入 <head>...</head> 中。
+这里选择「HTML 标签验证」，打开node_modules/hexo-theme-fluid/layout/_partial/head.ejs 文件，将验证标签放入 <head>...</head> 中。（失败，blog崩了。。。）
 
 ![image-20240629215434654](hexo-beautification/image-20240629215434654.png)
+
+查找github commit回退方法

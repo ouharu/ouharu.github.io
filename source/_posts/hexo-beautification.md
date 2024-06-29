@@ -351,12 +351,11 @@ giscus:
 
 打开主题设置文件，添加到页脚位置
 
-<script type="text/javascript" src="https://js.users.51.la/21892365.js"></script> 
+<script type="text/javascript" src="https://js.users.51.la/21892365.js"></script>
 
 ## 部署确认显示效果
 
 ![](hexo-beautification/Screenshot 2024-06-29 at 20.30.17.png)
-<<<<<<< HEAD
 
 ![image-20240629204506175](hexo-beautification/image-20240629204506175.png)
 
@@ -366,11 +365,11 @@ giscus:
 
 # 17. 谷歌收录
 
-参考：https://202271.xyz/post/26263/
+参考：<https://202271.xyz/post/26263/>
 
 ## 打开 google search console，右侧添加博客网址
 
-https://search.google.com/search-console/welcome?utm_source=about-page
+<https://search.google.com/search-console/welcome?utm_source=about-page>
 
 ![image-20240629210844097](hexo-beautification/image-20240629210844097.png)
 
@@ -381,20 +380,3 @@ https://search.google.com/search-console/welcome?utm_source=about-page
 ![image-20240629211332485](hexo-beautification/image-20240629211332485.png)
 
 部署博客后，查看博客域名+html文件名是否可以访问
-
-![image-20240629212823561](hexo-beautification/image-20240629212823561.png)
-
-然而google验证失败：
-
-![image-20240629214337535](hexo-beautification/image-20240629214337535.png)
-
-接下来用代码注入的方法验证
-参考：https://hwcoder.top/Hexo-Configuration#%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE
-
-这里选择「HTML 标签验证」，打开node_modules/hexo-theme-fluid/layout/_partial/head.ejs 文件，将验证标签放入 <head>...</head> 中。（失败，blog崩了。。。）
-
-![image-20240629215434654](hexo-beautification/image-20240629215434654.png)
-
-查找github commit回退方法
-=======
->>>>>>> parent of 2912120 (所有权验证)

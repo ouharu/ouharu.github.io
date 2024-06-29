@@ -208,7 +208,7 @@ index:
 
 `icon` 可以通过[自定义图标](https://hexo.fluid-dev.com/docs/icon/)修改为其他图标
 
-# ~~12.文章在首页的封面图~~
+# 【TODO】12.文章在首页的封面图
 
 对于单篇文章，在文章开头 [front-matter (opens new window)](https://hexo.io/zh-cn/docs/front-matter)中配置 `index_img` 属性。
 
@@ -351,13 +351,12 @@ giscus:
 
 打开主题设置文件，添加到页脚位置
 
-```html
 <script type="text/javascript" src="https://js.users.51.la/21892365.js"></script> 
-```
 
 ## 部署确认显示效果
 
 ![](hexo-beautification/Screenshot 2024-06-29 at 20.30.17.png)
+<<<<<<< HEAD
 
 ![image-20240629204506175](hexo-beautification/image-20240629204506175.png)
 
@@ -397,3 +396,5 @@ https://search.google.com/search-console/welcome?utm_source=about-page
 ![image-20240629215434654](hexo-beautification/image-20240629215434654.png)
 
 查找github commit回退方法
+=======
+>>>>>>> parent of 2912120 (所有权验证)

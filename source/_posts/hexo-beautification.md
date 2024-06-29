@@ -8,7 +8,7 @@ tags:
  - tutorial
 ---
 
-参考： https://hexo.fluid-dev.com/docs/guide/
+参考： <https://hexo.fluid-dev.com/docs/guide/>
 
 # 1. fluid主题安装
 
@@ -104,7 +104,7 @@ navbar:
 
 # 8. 展示 PV 与 UV 统计
 
-页脚可以展示 PV 与 UV 统计数据，目前支持两种数据来源：[不蒜子 ](http://busuanzi.ibruce.info/)。
+页脚可以展示 PV 与 UV 统计数据，目前支持两种数据来源：[不蒜子](http://busuanzi.ibruce.info/)。
 
 ```yaml
 statistics:
@@ -294,7 +294,7 @@ giscus:
 
 ## 参考
 [^1]: 参考资料1
-[^2]: 参考资料2	
+[^2]: 参考资料2 
 ```
 
 # 15. 友链
@@ -337,22 +337,22 @@ giscus:
 
 # 16. 添加51.la 统计
 
-参考：https://202271.xyz/post/28857/
+参考：<https://202271.xyz/post/28857/>
 
 ## 注册&登录
 
-https://web.51.la/
+<https://web.51.la/>
 
 ## 添加网站（v5版本）
 
-https://web.51.la/user/site/index
+<https://web.51.la/user/site/index>
 
 ## html代码添加到页脚
 
 打开主题设置文件，添加到页脚位置
 
-<script type="text/javascript" src="https://js.users.51.la/21892365.js"></script>	
+<script type="text/javascript" src="https://js.users.51.la/21892365.js"></script> 
 
 ## 部署确认显示效果
 
-![](hexo-beautification/Screenshot%202024-06-29%20at%2020.30.17.png)
+![](hexo-beautification/Screenshot 2024-06-29 at 20.30.17.png)

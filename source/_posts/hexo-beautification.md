@@ -359,11 +359,11 @@ giscus:
 
 ![](hexo-beautification/Screenshot 2024-06-29 at 20.30.17.png)
 
-![image-20240629204506175](hexo-beautification/image-20240629204506175.png)
-
 点击 51La，显示下图，说明网站统计添加成功：
 
-![image-20240629204940510](hexo-beautification/image-20240629204940510.png)
+![image-20240629225346808](hexo-beautification/image-20240629225346808.png)
+
+![image-20240629225413302](hexo-beautification/image-20240629225413302.png)
 
 # 17. 谷歌收录
 
@@ -373,12 +373,21 @@ giscus:
 
 <https://search.google.com/search-console/welcome?utm_source=about-page>
 
-![image-20240629210844097](hexo-beautification/image-20240629210844097.png)
-
 ## 验证网站所有权
+
+参考：https://popesaga.github.io/2020/07/09/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%EF%BC%9AGitHub%20Pages%20+%20Hexo%20+%20Fluid/#%E6%8F%90%E4%BA%A4%E5%88%B0-Google-%E6%94%B6%E5%BD%95
+
+**注意**：hexo在部署source 文件夹下markdown语法格式的文件成html格式时（本身文件格式就是html格式），都会遵守固有的html布局格式，**所以后面Google验证html文件时，此时的“html验证文件”已经不是原本下载的文件，变成遵守固有布局的html文件**，为了正常验证步骤进行，部署服务器前必须先打开“html验证文件“，加入以下内容，让固有的html布局失效。
+
+```html
+layout: false
+---
+```
+
+
 
 下载html文件，放入source文件夹
 
-![image-20240629211332485](hexo-beautification/image-20240629211332485.png)
+![image-20240629230445809](hexo-beautification/image-20240629230445809.png)
 
-部署博客后，查看博客域名+html文件名是否可以访问
+本地测试后部署博客，查看博客域名+html文件名是否可以访问

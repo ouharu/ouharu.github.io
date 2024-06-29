@@ -1,6 +1,8 @@
 ---
 title: "Hexo初步搭建"
 date: 2024-06-25
+categories:
+  - Diary
 tags: [hexo,tutorial]
 ---
 

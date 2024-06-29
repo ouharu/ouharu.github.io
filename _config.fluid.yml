@@ -420,9 +420,14 @@ footer:
   # 页脚第一行文字的 HTML，建议保留 Fluid 的链接，用于向更多人推广本主题
   # HTML of the first line of the footer, it is recommended to keep the Fluid link to promote this theme to more people
   content: '
-    <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
-    <i class="iconfont icon-love"></i>
+    <a href="https://icp.gov.moe/?keyword=20242444" target="_blank">萌ICP备20242444号</a>
+    <img style="width:32px;height:32px" src="https://icp.gov.moe/images/ico64.png">
     <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a>
+    <div style="font-size: 0.85rem">
+      <span id="timeDate">载入天数...</span>
+      <span id="times">载入时分秒...</span>
+      <script src="/js/duration.js"></script>
+    </div>
   '
 
   # 展示网站的 PV、UV 统计数
@@ -485,8 +490,8 @@ index:
 
       # 请求地址
       # Request url
-      url: "https://international.v1.hitokoto.cn/"
-
+      # url: "https://international.v1.hitokoto.cn/"
+      url: "https://v2.jinrishici.com/one.json"
       # 请求方法
       # Request method
       # Available: GET | POST | PUT
@@ -498,7 +503,7 @@ index:
 
       # 从请求结果获取字符串的取值字段，最终必须是一个字符串，例如返回结果为 {"data": {"author": "fluid", "content": "An elegant theme"}}, 则取值字段为 ['data', 'content']；如果返回是列表则自动选择第一项
       # The value field of the string obtained from the response. For example, the response content is {"data": {"author": "fluid", "content": "An elegant theme"}}, the expected `keys: ['data','content']`; if the return is a list, the first item is automatically selected
-      keys: ["hitokoto"]
+      keys: ["data","content"]
 
   # 自动截取文章摘要
   # Auto extract post

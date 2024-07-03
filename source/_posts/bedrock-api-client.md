@@ -61,15 +61,18 @@ BAG 采用无服务器 （Serverless）架构
 ## 部署代码需要修改
 
 - 公司账户不支持创建VPC和IGW
-- 需要指定其他资源指向默认创建的VPC、IGW
+- 需要指定其他资源指向默认已存在的VPC、IGW
 
-部署代码解析：
+## 部署代码解析
 
 ```yaml
-{
+https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-anatomy.html
+
+{	# 描述模板的文本字符串。此部分必须始终遵循模板格式版本部分。
   "Description": "Bedrock Access Gateway - OpenAI-compatible RESTful APIs for Amazon Bedrock",
+  # 扩展了 CloudFormation 模板的功能，允许使用更多的内部函数和表达式。此处声明Transform为了用Fn::FindInMap函数，函数作用为从Mapping section中检索值
   "Transform": "AWS::LanguageExtensions",
-  
+  # 要在运行时（创建或更新堆栈时）传递给模板的值。您可以引用模板的 Resources 和 Outputs 部分中的参数。
   "Parameters": {
     "ApiKeyParam": {
       "Type": "String",
@@ -77,7 +80,7 @@ BAG 采用无服务器 （Serverless）架构
       "Description": "The parameter name in System Manager used to store the API Key, leave blank to use a default key"
     }
   },
-  
+  # 指定堆栈资源及其属性
   "Resources": {
     # 创建VPC
     "VPCB9E5F0B4": {
@@ -288,4 +291,8 @@ BAG 采用无服务器 （Serverless）架构
 总的来说，这个模板创建了一个基于Lambda和ALB的无服务器API网关，用于代理对Amazon Bedrock服务的请求，并提供了与OpenAI API兼容的接口。
 
 
+
+# CloudFormation user guide
+
+https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-anatomy.html 
 

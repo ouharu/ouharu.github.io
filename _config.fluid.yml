@@ -421,7 +421,7 @@ footer:
   # HTML of the first line of the footer, it is recommended to keep the Fluid link to promote this theme to more people
   content: '
     <a href="https://icp.gov.moe/?keyword=20242444" target="_blank">萌ICP备20242444号</a>
-    <a href="https://www.51.la/?21892365" target="_blank"><img alt="我要啦免费统计" src="//ia.51.la/go1?id=21892365&pvFlag=1" style="border:none" /></a>
+    <a href="https://web.51.la/report/main?comId=21892365" target="_blank"><img src="https://pic3.zhimg.com/v2-86bd79f42994415d1b74400880f1011d_l.jpg?source=1940ef5c" alt="51la统计" style="height:30px;width:30px"> </a>
     <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a>
     <div style="font-size: 0.85rem">
       <span id="timeDate">载入天数...</span>

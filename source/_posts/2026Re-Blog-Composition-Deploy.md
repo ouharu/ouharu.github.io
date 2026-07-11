@@ -280,6 +280,7 @@ bashgit config --global user.email "58501286+ouharu@users.noreply.github.com"
 
 ## 十二、 图片粘贴路径问题
 ![alt text](2026Re-Blog-Composition-Deploy/image.png)
+
 在user setting json添加图片中代码:
 ```json
 "markdown.copyFiles.destination": {

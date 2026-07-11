@@ -282,10 +282,13 @@ bashgit config --global user.email "58501286+ouharu@users.noreply.github.com"
 ![alt text](2026Re-Blog-Composition-Deploy/image.png)
 
 在user setting json添加图片中代码:
+
 ```json
 "markdown.copyFiles.destination": {
     "/source/_posts/*.md": "${documentBaseName}/${fileName}"
   }
 ```
----
+
+***
+
 (end)

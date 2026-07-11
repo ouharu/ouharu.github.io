@@ -250,7 +250,8 @@ https://github.com/ouharu/ouharu.github.io/actions
 
 构建失败（红叉）多为 Front Matter 中 YAML 格式错误（缩进、多余符号、未加引号的特殊字符），可在对应 Actions 运行记录中查看具体报错定位问题。
 
-## 十一 push失败小结
+## 十一、 push失败小结
+![alt text](2026Re-Blog-Composition-Deploy/image2.png)
 这次推送失败的完整脉络，按发生顺序梳理一下：
 问题根源
 在 GitHub 账号设置里开启了"Keep my email address private"（保持邮箱私密）这个隐私保护功能。这个功能会让 GitHub 拒绝任何 commit 中带有你真实邮箱地址的推送，防止邮箱通过公开仓库的提交记录泄露。
@@ -275,3 +276,15 @@ bashgit commit --amend --author="cwang <58501286+ouharu@users.noreply.github.com
 以后新建 GitHub 账号或者新电脑第一次配置 Git 身份时，直接从一开始就用 noreply 邮箱，可以避免这整个折腾过程：
 bashgit config --global user.email "58501286+ouharu@users.noreply.github.com"
 这样从第一个 commit 开始就不会踩到隐私保护这个坑。
+
+
+## 十二、 图片粘贴路径问题
+![alt text](2026Re-Blog-Composition-Deploy/image.png)
+在user setting json添加图片中代码:
+```json
+"markdown.copyFiles.destination": {
+    "/source/_posts/*.md": "${documentBaseName}/${fileName}"
+  }
+```
+---
+(end)

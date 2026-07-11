@@ -74,7 +74,7 @@ npm --version    # 11.16.0
 
 ```bash
 git config --global user.name "cwang"
-git config --global user.email "chunhao.wang@outlook.jp"
+git config --global user.email "abc.x@ouharu.xx"
 ```
 
 Git 要求每次提交都绑定一个作者身份，这是版本控制机制的一部分，与是否使用 GitHub 无关。此项一次性配置，全局生效。
@@ -249,3 +249,29 @@ https://github.com/ouharu/ouharu.github.io/actions
 确认最新一次 workflow 运行成功，随后访问 `https://ouharu.github.io/` 确认文章已上线。
 
 构建失败（红叉）多为 Front Matter 中 YAML 格式错误（缩进、多余符号、未加引号的特殊字符），可在对应 Actions 运行记录中查看具体报错定位问题。
+
+## 十一 push失败小结
+这次推送失败的完整脉络，按发生顺序梳理一下：
+问题根源
+在 GitHub 账号设置里开启了"Keep my email address private"（保持邮箱私密）这个隐私保护功能。这个功能会让 GitHub 拒绝任何 commit 中带有你真实邮箱地址的推送，防止邮箱通过公开仓库的提交记录泄露。
+而你最初配置 Git 身份时用的是真实邮箱：
+bashgit config --global user.email "abc.x@ouharu.xx"
+这个邮箱和 GitHub 账号绑定邮箱一致，所以第一次 git push 就被服务器拒绝了：
+remote: error: GH007: Your push would publish a private email address.
+第一次尝试的误区
+发现问题后，只是把全局配置改成了 GitHub 提供的无回复邮箱：
+bashgit config --global user.email "58501286+ouharu@users.noreply.github.com"
+但推送依然失败。原因是 git config --global 只影响以后新产生的 commit，不会追溯修改已经存在的 commit。而当时要推送的那个 commit（新增博客文章那次），是在改配置之前就已经生成的，commit 内部固化记录的作者邮箱还是旧的真实邮箱，所以推送还是被拒绝。
+第二次尝试的语法错误
+意识到需要修正已存在的 commit 后，用 --amend 重写作者信息，但漏写了尖括号：
+bashgit commit --amend --author="cwang 58501286+ouharu@users.noreply.github.com" --no-edit
+Git 的 --author 参数要求严格的 Name <email> 格式，邮箱必须用尖括号包住，用来区分名字和邮箱两部分。少了尖括号，Git 没法解析这个字符串，报错：
+fatal: --author '...' is not 'Name <email>' and matches no existing author
+最终解决
+补上尖括号，命令写对：
+bashgit commit --amend --author="cwang <58501286+ouharu@users.noreply.github.com>" --no-edit
+从你贴的终端截图看，这次 --amend 执行成功了（能看到 [main 6c50008] ... 的提交信息输出），说明已经把 commit 的作者信息重写成了无回复邮箱，接下来再执行 git push origin main 就能正常推送了。
+这次问题带来的经验
+以后新建 GitHub 账号或者新电脑第一次配置 Git 身份时，直接从一开始就用 noreply 邮箱，可以避免这整个折腾过程：
+bashgit config --global user.email "58501286+ouharu@users.noreply.github.com"
+这样从第一个 commit 开始就不会踩到隐私保护这个坑。

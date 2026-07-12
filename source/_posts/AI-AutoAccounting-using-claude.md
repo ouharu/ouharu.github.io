@@ -27,8 +27,8 @@ iPhone拍照 → 压缩 → 传给AWS Lambda → Lambda调用Bedrock上的Claude
 先上一张架构图,把整条链路的每一环都画出来:
 
 ```mermaid
-flowchart LR
-    A[📱 iPhone拍照] --> B[快捷指令:压缩图片]
+graph LR
+    A[ iPhone拍照] --> B[快捷指令:压缩图片]
     B --> C[快捷指令:Base64编码]
     C --> D[POST请求]
     D --> E[AWS Lambda]
@@ -37,7 +37,7 @@ flowchart LR
     E -->|1.创建上传任务| G[Notion File Upload API]
     E -->|2.发送图片字节| G
     E -->|3.创建页面写入数据| H[(Notion数据库)]
-    G -.图片存储在.-> H
+    G -. 图片存储在 .-> H
 
     style A fill:#e8f4fd
     style E fill:#fff4e0

@@ -74,14 +74,16 @@ graph LR
 | 总金额 | Number | 含税总额 |
 | 分类 | Select | 餐饮/超市/数码/缴费/其他 |
 | 支付方式 | Select | 信用卡/現金/手机支付/其他 |
-| 商品明细 | Text | AI拼接的"商品名 价格 数量"列表 |
+| 商品明细 | Text | AI拼接的"商品名 价格 数量 JANコード"列表 |
 | 小票原图 | Files & media | 直传Notion自己的存储,不经S3 |
+| 商品图片 | Files & media | 由JAN码查乐天API得到的商品图(见第八章,后期新增) |
 | 记录创建时间 | Created time | Notion自动记录,不需要代码写入 |
 
 **几个设计上的取舍:**
 
 - 商品条目数量不固定(有的小票只有一件商品,有的有十几件),所以用一个多行文本字段拼接展示,而不是拆成"商品1/商品2..."这种固定列
 - "记录创建时间"用Notion原生的Created time类型,创建页面时自动生成,不需要在代码里手动传时间戳,零维护成本
+- 「商品图片」列是后期新增的功能(详见第八章),同样利用了`Files & media`一格可放多张图的特性,避免为此新建一个关联数据库
 
 ---
 
@@ -259,6 +261,202 @@ except urllib.error.HTTPError as e:
 
 ---
 
+## 八、进阶更新:给每个商品配上真实商品图(2026-07-25)
+
+> 本节是这套系统跑了一段时间后的一次功能升级,记录当天从需求到踩坑到跑通的完整过程。
+
+### 8.1 需求由来
+
+系统跑通后,Notion里每条账单已经有了商家、金额、分类和一段文本形式的商品明细。但翻看记录时总觉得少了点什么——**光看"ポケモン カクチョウインフェ 90点"这样一行文字,很难一眼想起当时到底买了什么**。于是冒出一个想法:能不能把每个商品的**条形码编号**和**商品图片**也展示出来?
+
+### 8.2 两个绕不开的设计问题
+
+动手前先想清楚两件事,否则方向一错就白忙。
+
+**问题一:商品图片从哪来?**
+
+这是最反直觉的一点:**小票照片里根本没有商品图**。小票上只有文字和(有时有的)条形码数字,不存在商品的实拍图。所以"展示商品图"这件事,必须从**外部数据源**去查。
+
+最终方案:让Claude在识别小票时**顺便读出每个商品的JANコード(日本商品条形码,13位数字)**,再拿这个JAN码去调**乐天商品搜索API**,把返回的商品图URL填进Notion。
+
+**问题二:Notion里怎么存多个商品的图?**
+
+一张小票有好几个商品,一开始想到的是建一个独立的"商品DB",用Relation关联——这是最规范的关系型设计。但实际权衡后放弃了,原因是:
+
+- 单DB方案下,Notion的`Files & media`类型属性**本身就支持一格放多张图**
+- 我不需要"点开单个商品看它的独立属性",只要能在账单这一行里把几张商品图**平铺展示**出来就够了
+
+所以最终选了**最轻量的方案**:
+
+- **不建新DB**,只在现有账单DB上**加一列「商品图片」**(Files & media类型)
+- **条形码不单独建列**,直接塞进原有的「商品明细」文本里
+- 一格`files`属性里放多张外部图片URL
+
+这个方案的"天花板"要认清:图片和商品是"一堆"而非"一一对应",Notion不会告诉你"第2张图对应哪个商品",它们只是靠顺序平铺在同一格里。对我的使用场景,这个取舍完全可以接受。
+
+### 8.3 乐天商品搜索API的配置与踩坑
+
+这一步是当天耗时最久的地方,坑很密集,单独记录下来。
+
+**申请应用**
+
+到[乐天开发者平台](https://webservice.rakuten.co.jp/)创建一个应用,拿到两样东西:
+
+- `applicationId`:一串UUID(新版格式,不再是旧版的纯数字)
+- `accessKey`:`pk_`开头的一串(publishable key)
+
+创建时"アプリケーションタイプ"选了「Webアプリケーション」,并且要填一项「許可されたWebサイト」(允许的网站白名单)。我这里填的是 `*.amazonaws.com`。
+
+**核心大坑:校验的是`Origin`头,不是`Referer`**
+
+新版API域名是 `https://openapi.rakuten.co.jp/ichibams/api/IchibaItem/Search/20260701`,请求里带上`applicationId`和`accessKey`后,从命令行/后端直接调用,一直报:
+
+```json
+{"errors": {"errorCode": 403, "errorMessage": "REQUEST_CONTEXT_BODY_HTTP_REFERRER_MISSING"}}
+```
+
+`REFERRER_MISSING`这个错误名极具误导性——它写着"referrer",于是我在`Referer`请求头上换了各种域名反复试,**无论怎么带Referer,都还是报同样的missing**。
+
+真正的突破口来自一个被忽略的对比信号:
+
+| 请求带了什么 | 返回 |
+|---|---|
+| 不带来源头 / 只带`Referer` | 403 `REFERRER_MISSING` |
+| 带`Origin`头(但值不匹配白名单) | **503 `Authentication service error`** |
+| **带`Origin`头(值匹配白名单)** | **200 成功** ✅ |
+
+关键在于:**带`Origin`时返回的是503(说明它真的去做认证校验了),带`Referer`时是403 missing(说明它压根没理会这个头)**。这说明乐天这个`pk_` key校验的是`Origin`头,而不是名字里写的那个`Referer`。
+
+把三个条件凑齐后,终于返回200:
+
+1. 带`Origin`请求头(不是`Referer`)
+2. `Origin`的值要**匹配白名单**`*.amazonaws.com`,比如 `https://receipt.amazonaws.com`
+3. `Origin`必须**带`https://`前缀**(去掉前缀会失败)
+
+> 补充一点:这个`Origin`值和你Lambda的真实URL没有任何关系,乐天不会真去访问它,只做字符串匹配。它本质上就是一个"进门暗号",在代码里写死或走环境变量即可。之所以之前一直失败,还有一个原因是白名单一开始误填成了`*.rakuten.com`,和请求里的来源根本对不上。
+
+**返回结果里图片的位置**
+
+`format=json`时,商品图在 `Items[0].Item.mediumImageUrls[0].imageUrl`,URL常带`?_ex=128x128`的尺寸后缀,去掉后能拿到更清晰的原图。
+
+### 8.4 代码改动(共4处)
+
+整个升级只动了`lambda_function.py`一个文件,没有引入任何第三方库(依旧只用标准库`urllib`)。
+
+**① 新增乐天相关配置和环境变量**
+
+```python
+import urllib.parse   # 新增,用于URL编码参数
+
+RAKUTEN_APP_ID = os.environ["RAKUTEN_APP_ID"]          # applicationId(UUID)
+RAKUTEN_ACCESS_KEY = os.environ["RAKUTEN_ACCESS_KEY"]  # accessKey(pk_开头)
+RAKUTEN_ORIGIN = os.environ["RAKUTEN_ORIGIN"]          # 匹配白名单的Origin,带https://
+RAKUTEN_SEARCH_URL = "https://openapi.rakuten.co.jp/ichibams/api/IchibaItem/Search/20260701"
+```
+
+**② 改Prompt,让商品明细带上JANコード**
+
+原来`items`是"商品名 价格 数量"的格式,现在改成用**竖线`|`分隔**的四段式,多加了JANコード字段。用竖线而不是空格分隔,是为了避免商品名本身含空格时被拆错:
+
+```
+"items": "商品明细,每行一个商品,用换行符分隔,每行格式为「商品名 | 价格 | 数量 | JANコード」,
+四个字段之间用竖线|分隔;如果小票上没有印JANコード(条形码数字),该位置留空,但竖线|要保留"
+```
+
+**③ 新增两个取图函数**
+
+一个负责解析明细、遍历JAN码;一个负责调乐天API。单个商品取图失败(超时、查不到)时直接跳过,绝不影响主流程:
+
+```python
+def _lookup_product_images(items_text):
+    """解析商品明细,遍历每行的JANコード,调乐天API查商品图片URL"""
+    if not items_text:
+        return []
+    image_urls, seen = [], set()
+    for line in items_text.splitlines():
+        parts = [p.strip() for p in line.strip().split("|")]
+        jan_code = parts[3] if len(parts) >= 4 else ""
+        if not jan_code or not jan_code.isdigit():   # 没读到JAN码就跳过
+            continue
+        url = _rakuten_search_image(jan_code)
+        if url and url not in seen:
+            seen.add(url)
+            image_urls.append(url)
+    return image_urls
+
+
+def _rakuten_search_image(keyword):
+    """用JANコード调乐天API,返回第一条商品的代表图URL;失败返回None"""
+    params = {
+        "applicationId": RAKUTEN_APP_ID, "accessKey": RAKUTEN_ACCESS_KEY,
+        "keyword": keyword, "hits": 1, "imageFlag": 1, "format": "json",
+    }
+    url = RAKUTEN_SEARCH_URL + "?" + urllib.parse.urlencode(params)
+    req = urllib.request.Request(url, headers={
+        "User-Agent": "receipt-processor/1.0",
+        "Origin": RAKUTEN_ORIGIN,   # 关键:乐天校验的是Origin头,不是Referer!
+    })
+    try:
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            data = json.loads(resp.read())
+    except Exception:
+        return None                 # 单个商品取图失败不中断整个流程
+    items = data.get("Items", [])
+    if not items:
+        return None
+    medium = items[0]["Item"].get("mediumImageUrls") or []
+    return medium[0]["imageUrl"].split("?")[0] if medium else None
+```
+
+**④ 把图片URL写进Notion「商品图片」列**
+
+Notion的`files`属性支持`external`类型,可以**直接贴外部图片URL,不需要像小票原图那样走三段式上传**。多个商品图组装成一个数组即可:
+
+```python
+image_urls = _lookup_product_images(extracted.get("items"))
+if image_urls:
+    properties["商品图片"] = {
+        "files": [
+            {"type": "external", "name": f"item_{i + 1}.jpg", "external": {"url": u}}
+            for i, u in enumerate(image_urls)
+        ]
+    }
+```
+
+### 8.5 本地验证 + Remote Invoke实测
+
+调乐天API的逻辑,先用一个独立的小脚本在本地反复试通(这也是定位`Origin`头那个坑的过程)。链路确认没问题后,再合进Lambda。
+
+部署到Lambda并配好3个乐天环境变量后,直接用**AWS Toolkit的Remote Invoke**功能测试——它在本地VS Code里点一下,实际调用的是云上已部署的函数,好处是**Bedrock权限、环境变量、网络全部用真实运行环境,不用在本地装Docker或配AWS凭证**。
+
+拿一张真实的ヨドバシカメラ(友都八喜)小票测试,返回:
+
+```json
+{
+  "status": "success",
+  "notion_page_url": "https://app.notion.com/p/...",
+  "extracted": {
+    "merchant": "ヨドバシカメラ 梅田店",
+    "date": "2026-07-25T17:41:00+09:00",
+    "total_amount": 20655,
+    "category": "数码",
+    "payment_method": "信用卡",
+    "items": "ポケモン カクチョウインフェ 90点 | 16200 | 1 | 4521329431512\nポケモン スタートデッキ 5点 | 4455 | 1 | 4521329427270"
+  }
+}
+```
+
+最惊喜的是**Claude把两个13位JAN码一位不差地读了出来**,乐天API据此精准查到了对应商品图,Notion账单的「商品图片」列里同步出现了两张商品图。整条链路一次跑通。
+
+### 8.6 本次升级的经验补充
+
+1. **错误信息的名字未必可信**:`REFERRER_MISSING`实际指的是"缺少合法来源",而它认定来源的依据是`Origin`头。与其盯着字面意思死磕,不如对比"不同请求触发的不同错误码"来反推真实校验逻辑——503和403的区别,就是那个决定性线索
+2. **设计要匹配真实需求,而非追求"标准"**:关系型的多DB方案更"正确",但我的需求只是"平铺展示几张图",单DB加一列就够了,过度设计反而增加维护成本
+3. **外部依赖要做到"失败不扩散"**:取图是锦上添花的功能,所以`_rakuten_search_image`里任何异常都吞掉返回`None`,绝不能因为某个商品查不到图,就让整条记账链路失败
+4. **Notion的`external`文件类型很省事**:相比小票原图那套三段式上传,外部URL直接贴进`files`属性,一行代码搞定,还不占用自己的存储
+
+---
+
 ## 附:完整Lambda代码
 
 ```python
@@ -267,6 +465,7 @@ import base64
 import os
 import urllib.request
 import urllib.error
+import urllib.parse
 import uuid
 import boto3
 
@@ -275,6 +474,13 @@ NOTION_TOKEN = os.environ["NOTION_TOKEN"]
 NOTION_DATABASE_ID = os.environ["NOTION_DATABASE_ID"]
 NOTION_VERSION = "2026-03-11"
 BEDROCK_MODEL_ID = os.environ["BEDROCK_MODEL_ID"]
+
+# ---- 乐天商品搜索API配置(用条形码查商品图片) ----
+RAKUTEN_APP_ID = os.environ["RAKUTEN_APP_ID"]          # applicationId(UUID)
+RAKUTEN_ACCESS_KEY = os.environ["RAKUTEN_ACCESS_KEY"]  # accessKey(pk_开头)
+# Origin头:必须匹配乐天后台「許可されたWebサイト」白名单,且带https://前缀
+RAKUTEN_ORIGIN = os.environ["RAKUTEN_ORIGIN"]
+RAKUTEN_SEARCH_URL = "https://openapi.rakuten.co.jp/ichibams/api/IchibaItem/Search/20260701"
 
 bedrock = boto3.client("bedrock-runtime", region_name="ap-northeast-1")
 
@@ -343,7 +549,7 @@ def _extract_receipt_fields(image_bytes):
   "total_amount": 含税总金额的数字(不含货币符号,不加引号),
   "category": "根据商家和商品判断的分类,从这些选项里选一个:餐饮/超市/数码/缴费/其他",
   "payment_method": "支付方式,从这些选项里选一个:信用卡/現金/手机支付/其他",
-  "items": "商品明细,每行一个商品价格以及数量,用换行符分隔,格式如:商品名 价格 数量"
+  "items": "商品明细,每行一个商品,用换行符分隔,每行格式为「商品名 | 价格 | 数量 | JANコード」,四个字段之间用竖线|分隔;如果小票上没有印JANコード(条形码数字),该位置留空,但竖线|要保留"
 }
 
 各字段的数据类型要求(务必严格遵守):
@@ -352,7 +558,7 @@ def _extract_receipt_fields(image_bytes):
 - total_amount: 数字(number),不加引号,不带货币符号或千分位逗号,例如 1617 或 1617.5
 - category: 字符串(string),用双引号包裹
 - payment_method: 字符串(string),用双引号包裹
-- items: 字符串(string),用双引号包裹
+- items: 字符串(string),用双引号包裹,内部每行格式「商品名 | 价格 | 数量 | JANコード」,用竖线分隔,行与行之间用换行符
 
 如果某个字段无法从图片中识别,对应值设为null。总金额如果看到多个数字,优先使用"合计"或"总计"这一行的最终金额。"""
 
@@ -397,6 +603,67 @@ def _extract_receipt_fields(image_bytes):
         text_output = text_output.strip()
 
     return json.loads(text_output)
+
+
+def _lookup_product_images(items_text):
+    """解析商品明细,遍历每行的JANコード,调乐天API查商品图片URL。
+    返回图片URL列表(每个有JANコード且查到图的商品对应一张代表图)。
+    """
+    if not items_text:
+        return []
+
+    image_urls = []
+    seen = set()
+    for line in items_text.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        # 每行格式:商品名 | 价格 | 数量 | JANコード
+        parts = [p.strip() for p in line.split("|")]
+        jan_code = parts[3] if len(parts) >= 4 else ""
+        # 只处理读到了JANコード(纯数字,通常8或13位)的商品
+        if not jan_code or not jan_code.isdigit():
+            continue
+
+        url = _rakuten_search_image(jan_code)
+        if url and url not in seen:
+            seen.add(url)
+            image_urls.append(url)
+
+    return image_urls
+
+
+def _rakuten_search_image(keyword):
+    """用关键词(JANコード)调乐天商品搜索API,返回第一条商品的代表图URL;失败返回None"""
+    params = {
+        "applicationId": RAKUTEN_APP_ID,
+        "accessKey": RAKUTEN_ACCESS_KEY,
+        "keyword": keyword,
+        "hits": 1,
+        "imageFlag": 1,
+        "format": "json",
+    }
+    url = RAKUTEN_SEARCH_URL + "?" + urllib.parse.urlencode(params)
+    req = urllib.request.Request(url, headers={
+        "User-Agent": "receipt-processor/1.0",
+        "Origin": RAKUTEN_ORIGIN,  # 关键:乐天校验的是Origin头(必须匹配白名单)
+    })
+    try:
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            data = json.loads(resp.read())
+    except Exception:
+        # 单个商品取图失败不应中断整个流程
+        return None
+
+    items = data.get("Items", [])
+    if not items:
+        return None
+    item = items[0]["Item"]
+    medium = item.get("mediumImageUrls") or []
+    if not medium:
+        return None
+    # 去掉尺寸后缀(?_ex=128x128),拿更清晰的原图
+    return medium[0]["imageUrl"].split("?")[0]
 
 
 def _notion_create_file_upload():
@@ -466,6 +733,16 @@ def _notion_create_page(extracted, file_upload_info):
 
     if extracted.get("items"):
         properties["商品明细"] = {"rich_text": [{"text": {"content": extracted["items"]}}]}
+
+    # 用商品的JANコード查乐天商品图,写入「商品图片」列(files类型,支持多张)
+    image_urls = _lookup_product_images(extracted.get("items"))
+    if image_urls:
+        properties["商品图片"] = {
+            "files": [
+                {"type": "external", "name": f"item_{i + 1}.jpg", "external": {"url": u}}
+                for i, u in enumerate(image_urls)
+            ]
+        }
 
     payload = {
         "parent": {"database_id": NOTION_DATABASE_ID},
